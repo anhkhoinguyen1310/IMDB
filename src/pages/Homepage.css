@@ -1,0 +1,70 @@
+.sidebar {
+    padding: 20px;
+    background-color: #1c1c1c;
+    /* Or any color that matches your design */
+}
+.body{
+    background-color: #fff;
+
+}
+
+.addingMargin
+{
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
+
+.scrolling-wrapper {
+    overflow-y: auto;
+    max-height: 48vh;
+    padding: 1rem
+}
+.scrolling-wrapper-card
+{
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height:15vh;
+
+}
+
+.adjust-padding
+{
+    padding: 0;
+    margin: 0;
+}
+
+.checkBackground{
+    background-color:  #1c1c1c;
+}
+.flex-child {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* This will make sure that the child grows */
+}
+
+.video-item {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+
+.video-info {
+    margin-left: 10px;
+}
+
+.video-title {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.video-duration {
+    font-size: 12px;
+    color: #aaa;
+    /* Lighter text color for the duration */
+}
+.fixedButton
+{
+    position: fixed;
+}
