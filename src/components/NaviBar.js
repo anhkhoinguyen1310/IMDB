@@ -1,13 +1,12 @@
 import React from 'react'
 import  {Container, Nav, Navbar, NavDropdown}from 'react-bootstrap';
-import {useState, useEffect } from 'react'
 import {Link} from 'react-router-dom'
 
 export default function Navibar() {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+        <Navbar.Brand href="#home">IMDB</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
