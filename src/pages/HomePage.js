@@ -66,6 +66,7 @@ export default function HomePage() {
                     <img
                       className="d-block w-100"
                       src={`https://image.tmdb.org/t/p/w780/${movie.backdrop_path}`}
+                      alt={movie.title} 
                     />
                     <Carousel.Caption>
                       <h3 style={{}}>{`${movie.original_title} ${index + 1}`}</h3>
