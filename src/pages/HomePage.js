@@ -3,6 +3,7 @@ import { Container, Col, Row, Card, Button, Carousel, Badge } from 'react-bootst
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import SideBar from '../components/SideBar';
+import ModalVideo from '../components/ModalVideo';
 
 import './Homepage.css'
 const API_KEY = process.env.REACT_APP_IMDB_API_KEY;
@@ -13,15 +14,32 @@ export default function HomePage() {
   const [moviesForFilter, setMoviesForFilter] = useState([])
   const [genreMovie, setGenreMovie] = useState([])
   const [pageNumber, setPageNumber] = useState(1)
+  const [getTrailer, setGetTrailer] = useState([])
+  const [trailerKey, setTrailerKey] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
   const fetchMovieOnTrending = async () => {
     const resp = await fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`);
     const jsondata = await resp.json();
     console.log({ IMDB: jsondata });
     setMoviesOnTrending(jsondata.results);
   };
+  async function onFetchTrailer(movie) {
+    const url = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${API_KEY}&language=en-US&append_to_response=videos`;
+    const resp = await fetch(url)
+    const data = await resp.json()
+    console.log({ dataforTrailer: data });
+    const officialTrailer = data.videos.results.find(trailer => trailer.name.includes("Official Trailer"));
+    if (officialTrailer) {
+      setTrailerKey(officialTrailer.key);
+      setShowModal(true);
+    } else {
+      console.log("Not an Official Trailer");
+    }
+
+  }
   const onLoadMoreMovies = async () => {
     const newPageNumber = pageNumber + 1;
-
     const resp = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${newPageNumber}`);
     const data = await resp.json()
     console.log({ newPage: data })
@@ -35,8 +53,6 @@ export default function HomePage() {
     console.log({ onPopular: data })
     setmoviesOnDiscovering(data.results);
     setMoviesForFilter(data.results)
-    
-  
   }
 
   const fetchGenre = async () => {
@@ -48,7 +64,7 @@ export default function HomePage() {
   const handleFilteredMovies = (filteredMovies, reset = false) => {
     setmoviesOnDiscovering(reset ? moviesForFilter : filteredMovies);
   };
-  
+
   useEffect(() => {
     fetchMovieOnTrending();
     fetchMovieOnDiscovering();
@@ -66,7 +82,7 @@ export default function HomePage() {
                     <img
                       className="d-block w-100"
                       src={`https://image.tmdb.org/t/p/w780/${movie.backdrop_path}`}
-                      alt={movie.title} 
+                      alt={movie.title}
                     />
                     <Carousel.Caption>
                       <h3 style={{}}>{`${movie.original_title} ${index + 1}`}</h3>
@@ -116,6 +132,7 @@ export default function HomePage() {
                       <Card.Text className='scrolling-wrapper-card'>
                         {movie.overview}
                       </Card.Text>
+                      <Card.Link as={Link} to={"/videos/" + movie.id}  > <h4> See Details</h4></Card.Link>
                       <Card.Text className='border-top'>
                         <h5><b> Ratings: {movie.vote_average}</b>  </h5> from {movie.vote_count} votes
                       </Card.Text>
@@ -125,15 +142,35 @@ export default function HomePage() {
                       <Card.Text className='border-top'>
                         <h5><b> Release Date: </b>  </h5>  {movie.release_date}
                       </Card.Text>
-                      <Button as={Link} to={"/videos/" + movie.id} variant="primary">See Details</Button>
+
+                      <Button variant="primary" onClick={() => {
+                        onFetchTrailer(movie).then(() => {
+                          if (getTrailer && getTrailer.results) {
+                            getTrailer.results.forEach((trailer) => {
+                              if (trailer.name.includes("Official Trailer")) {
+                                console.log("Found: ", trailer.key)
+                              } else {
+                                console.log("Not an Official Trailer");
+                              }
+                            });
+                          } else {
+                            console.log("Trailers data not available");
+                          }
+                        });
+                      }}>View Trailer</Button>
+
+                      {showModal && <ModalVideo showModal={showModal} setShowModal={setShowModal} trailerKey={trailerKey} />}
+
+
                     </Card.Body>
+
                   </Card>
                 </Col>
               ))}
             </Row>
           </Col>
           <Col sm={3}>
-            <SideBar moviesOnDiscovering = {moviesOnDiscovering} genreMovie = {genreMovie} onFilter = {handleFilteredMovies}/>
+            <SideBar moviesOnDiscovering={moviesOnDiscovering} genreMovie={genreMovie} onFilter={handleFilteredMovies} />
           </Col>
         </Row>
       </Container>
