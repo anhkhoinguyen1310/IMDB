@@ -25,19 +25,24 @@ export default function HomePage() {
     setMoviesOnTrending(jsondata.results);
   };
   async function onFetchTrailer(movie) {
-    const url = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${API_KEY}&language=en-US&append_to_response=videos`;
-    const resp = await fetch(url)
-    const data = await resp.json()
+    const url = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${API_KEY}&append_to_response=videos`;
+    const resp = await fetch(url);
+    const data = await resp.json();
     console.log({ dataforTrailer: data });
-    const officialTrailer = data.videos.results.find(trailer => trailer.name.includes("Official Trailer"));
-    if (officialTrailer) {
-      setTrailerKey(officialTrailer.key);
-      setShowModal(true);
-    } else {
-      console.log("Not an Official Trailer");
-    }
 
-  }
+    if (data.videos && data.videos.results) {
+        const officialTrailer = data.videos.results.find(trailer => trailer.name.includes("Official Trailer"));
+        if (officialTrailer) {
+            setTrailerKey(officialTrailer.key);
+            setGetTrailer(officialTrailer)
+            setShowModal(true);
+        } else {
+            console.log("Not an Official Trailer");
+        }
+    } else {
+        console.log("No trailer data available");
+    }
+}
   const onLoadMoreMovies = async () => {
     const newPageNumber = pageNumber + 1;
     const resp = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${newPageNumber}`);
@@ -158,12 +163,7 @@ export default function HomePage() {
                           }
                         });
                       }}>View Trailer</Button>
-
-                      {showModal && <ModalVideo showModal={showModal} setShowModal={setShowModal} trailerKey={trailerKey} />}
-
-
                     </Card.Body>
-
                   </Card>
                 </Col>
               ))}
@@ -174,6 +174,7 @@ export default function HomePage() {
           </Col>
         </Row>
       </Container>
+      <ModalVideo showModal={showModal} setShowModal={setShowModal} trailerKey={trailerKey} />
 
       <Container>
         <div className="d-grid gap-2 m-3">
